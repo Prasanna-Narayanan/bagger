@@ -1,4 +1,5 @@
 import 'dart:convert';
+import "dart:math";
 
 import 'package:bagger/items_list.dart';
 import "package:flutter/material.dart";
@@ -6,7 +7,8 @@ import "package:bagger/models/item.dart";
 import "package:bagger/pages/new_item.dart";
 import "package:bagger/pages/voice_record.dart";
 import "package:http/http.dart" as http;
-import "dart:math";
+import "package:bagger/db/db_helper.dart";
+
 
 class BaggerHome extends StatefulWidget {
 
@@ -20,34 +22,49 @@ class _BaggerHomeState extends State<BaggerHome> {
   List<Widget> baggerHomeList;
   final GlobalKey _apiContainerKey = new GlobalKey();
 
+   final DBHelper dbHelper = DBHelper.dbInstance;
+
   bool isAPICallMade = false;  
   var res;
 
   @override
   void initState() {
     super.initState();
-    _initializeItems();
+    _initItemsList();
     baggerHomeList = new List<Widget>();
   }
 
-  void _initializeItems() {
-    itemsList.add(Item(title: "Google Pixel XL", content: "Laborum nulla fugiat ex qui Lorem excepteur culpa dolore. Ea id voluptate mollit proident. Et ex velit eiusmod et culpa laborum ut. Aute tempor eiusmod aliqua minim culpa laborum consectetur."));
+  // void _getItemList() {
+  //   // itemsList.add(Item(title: "Google Pixel XL", content: "Laborum nulla fugiat ex qui Lorem excepteur culpa dolore. Ea id voluptate mollit proident. Et ex velit eiusmod et culpa laborum ut. Aute tempor eiusmod aliqua minim culpa laborum consectetur."));
 
-    itemsList.add(Item(title: "Samsung S10", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
+  //   // itemsList.add(Item(title: "Samsung S10", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
 
-    itemsList.add(Item(title: "IPhone X", content: "Non culpa elit ullamco magna ea aliquip nostrud officia adipisicing laboris. Cupidatat et nostrud aliqua cillum Lorem minim do irure enim voluptate. Labore do ad aute laborum laboris velit ullamco laboris nulla ad consectetur id. Esse non ex consequat ad ea minim eiusmod voluptate officia ullamco incididunt et deserunt. Magna voluptate exercitation et fugiat. Quis do dolore proident do enim consectetur sint quis sunt non proident consectetur."));
+  //   // itemsList.add(Item(title: "IPhone X", content: "Non culpa elit ullamco magna ea aliquip nostrud officia adipisicing laboris. Cupidatat et nostrud aliqua cillum Lorem minim do irure enim voluptate. Labore do ad aute laborum laboris velit ullamco laboris nulla ad consectetur id. Esse non ex consequat ad ea minim eiusmod voluptate officia ullamco incididunt et deserunt. Magna voluptate exercitation et fugiat. Quis do dolore proident do enim consectetur sint quis sunt non proident consectetur."));
 
-    itemsList.add(Item(title: "IPhone XS", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
+  //   // itemsList.add(Item(title: "IPhone XS", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
 
-    itemsList.add(Item(title: "One Plus 6T", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
+  //   // itemsList.add(Item(title: "One Plus 6T", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
 
-    itemsList.add(Item(title: "Poco", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
+  //   // itemsList.add(Item(title: "Poco", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
 
-    itemsList.add(Item(title: "Mi Note 5 Pro", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
+  //   // itemsList.add(Item(title: "Mi Note 5 Pro", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
 
-    itemsList.add(Item(title: "Samsung S10", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
+  //   // itemsList.add(Item(title: "Samsung S10", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
 
-    itemsList.add(Item(title: "Google Pixel 3 XL", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
+  //   // itemsList.add(Item(title: "Google Pixel 3 XL", content: "Aliquip nostrud pariatur esse mollit quis in consectetur duis nulla quis cillum. Aute eiusmod culpa elit et aliquip labore proident ea Lorem aute. Cillum velit commodo fugiat ea magna quis."));
+
+  //   _getItemList();
+  // }
+
+  Future<void> _initItemsList() async{ 
+    var rows = await dbHelper.all();
+    List<Item> items = <Item>[];
+    setState(() {
+      for (var row in rows) {
+        items.insert(0, Item.fromMap(row));
+      }
+      itemsList = items;
+    });
   }
 
   void _handleNewItem() async {
@@ -56,16 +73,13 @@ class _BaggerHomeState extends State<BaggerHome> {
     ));
 
     this.setState(() {
-      if(item)
+      print(item.toMap()['title']);
+      if(item != null)
         itemsList.insert(0, item);
     });
   }
 
   Future<Null> _makeAPICall() async {
-//    curl --get --include 'https://free-nba.p.rapidapi.com/games/1' \
-//   -H 'X-RapidAPI-Host: free-nba.p.rapidapi.com' \
-//   -H 'X-RapidAPI-Key: e3b9f7923bmshbe88cc11642dbe6p1db049jsn2d6e9d4b657c'
-
     String url = "https://free-nba.p.rapidapi.com/games/${Random().nextInt(10)}";
 
     setState(() {
@@ -90,24 +104,40 @@ class _BaggerHomeState extends State<BaggerHome> {
     ));
   }
 
+  void _onItemDismmed(int i) {
+    setState(() {
+      if(itemsList[i] != null)
+        itemsList.removeAt(i);
+      print(itemsList.length);
+    });
+  }
+
   final topBarActions = <Widget>[
       IconButton(
         icon: Icon(
           Icons.settings,
         ),
-        onPressed: (){},
+        onPressed: (){
+
+        },
       ),
   ];
 
+  Future<void> _refereshList() async {
+    print("refreshing");
+    await _initItemsList();
+  }
+
   List<Widget> _buildBaggerBody() {
 
-    if(baggerHomeList.isEmpty && !isAPICallMade) {
-      baggerHomeList.add(
-        Flexible(
-          child: ItemsList(itemsList: itemsList)
-        )
-      );
-    }
+  baggerHomeList = [(
+    Flexible(
+      child: RefreshIndicator( 
+        onRefresh: _refereshList ,
+        child: ItemsList(itemsList: itemsList, onDismissed: _onItemDismmed)
+      )
+    )
+  )];
 
 
     if(isAPICallMade) {

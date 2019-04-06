@@ -3,7 +3,7 @@ import "package:flutter/material.dart";
 // import "package:intl/intl.dart";
 import 'dart:io';
 import "package:path_provider/path_provider.dart";
-import "package:audio_recorder2/audio_recorder2.dart";
+// import "package:audio_recorder2/audio_recorder2.dart";
 
 class VoiceRecord extends StatefulWidget {
   @override
@@ -23,10 +23,10 @@ class _VoiceRecordState extends State<VoiceRecord> {
   }
 
   void _checkForPermissions() async {
-    bool packagePermission = await AudioRecorder2.hasPermissions;
+    // bool packagePermission = await AudioRecorder2.hasPermissions;
 
     setState(() {
-      hasPermission = packagePermission;
+      // hasPermission = packagePermission;
     });
   }
 
@@ -59,7 +59,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
   void startRecording() async {
     File file = await _localFile;
     
-    await AudioRecorder2.start(path: file.path.toString(), audioOutputFormat: AudioOutputFormat.AAC);
+    // await AudioRecorder2.start(path: file.path.toString(), audioOutputFormat: AudioOutputFormat.AAC);
     setState(() {
       _isRecording = true;
     });
@@ -69,9 +69,9 @@ class _VoiceRecordState extends State<VoiceRecord> {
     // String result = await flutterSound.stopRecorder();
     // print("Stopped: $result");
 
-    Recording recording = await AudioRecorder2.stop();
+    // Recording recording = await AudioRecorder2.stop();
 
-    print("Recording path: ${recording.path}, Duration: ${recording.duration}");
+    // print("Recording path: ${recording.path}, Duration: ${recording.duration}");
 
     setState((){
       _isRecording = false;

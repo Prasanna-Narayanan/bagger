@@ -1,16 +1,12 @@
 import "package:flutter/material.dart";
 import "package:bagger/models/item.dart";
 
-class ItemsList extends StatefulWidget {
+class ItemsList extends StatelessWidget {
   final List<Item> itemsList;
+  final Function onDismissed;
 
-  ItemsList({this.itemsList});
+  ItemsList({this.itemsList, this.onDismissed});
 
-  @override
-  _ItemsListState createState() => _ItemsListState();
-}
-
-class _ItemsListState extends State<ItemsList> {
   String printInDouble(int t) {
     return t < 10 ? "0$t" : t.toString();
   }
@@ -36,7 +32,7 @@ class _ItemsListState extends State<ItemsList> {
   }
 
   Widget _archivedList(int index) {
-    var item = widget.itemsList[index];
+    var item = itemsList[index];
     
     if(item.isArchived) {
       return RotatedBox(
@@ -51,40 +47,55 @@ class _ItemsListState extends State<ItemsList> {
     }
   }
 
-  Widget _buildListTile(int i, bool isColored) {
+  _handleDismiss(dir, i) {
+    print(i);
+    onDismissed(i);
+  }
+
+  Widget _buildListTile(int i, bool isColored, BuildContext context) {
     return Column(
       children: <Widget>[
-        ListTile(
-          onTap: () {},
-          // leading: _archivedList(i),
-          title: Container(
-            padding: EdgeInsets.only(top: 5.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  widget.itemsList[i].title,
-                  style: TextStyle(color: Theme.of(context).primaryTextTheme.title.color, fontSize: 24.0, fontFamily: "Cookie"),
-                ),
-                Text(
-                  _formatDate(widget.itemsList[i].updatedAt),
-                  style: TextStyle(fontSize: 16.0,color: Colors.black45, fontFamily: "Cookie")
-                )
-              ],
-            ),
-          ),
-          subtitle: Container(
-            padding: EdgeInsets.symmetric(vertical: 10.0),
-            child: Text(
-              widget.itemsList[i].content,
-              style: TextStyle(
-                fontFamily: "Cookie",
-                fontSize: 18.0
+        Dismissible(
+            key: UniqueKey(),
+            onDismissed: (dir) { _handleDismiss(dir, i); },
+            background: Container(color: Theme.of(context).accentColor),
+            child: ListTile(
+            onTap: () {},
+            // leading: _archivedList(i),
+            title: Container(
+              padding: EdgeInsets.only(top: 5.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Flexible(
+                    child: Text(
+                      itemsList[i].title,
+                      style: TextStyle(color: Theme.of(context).primaryTextTheme.title.color, fontSize: 24.0, fontFamily: "Cookie"),
+                      overflow: TextOverflow.fade,
+                      softWrap: false,
+                    ),
+                  ),
+                  SizedBox(width: 20.0),
+                  Text(
+                    _formatDate(itemsList[i].updatedAt),
+                    style: TextStyle(fontSize: 16.0,color: Colors.black45, fontFamily: "Cookie")
+                  )
+                ],
               ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 3,
+            ),
+            subtitle: Container(
+              padding: EdgeInsets.symmetric(vertical: 10.0),
+              child: Text(
+                itemsList[i].content,
+                style: TextStyle(
+                  fontFamily: "Cookie",
+                  fontSize: 18.0
+                ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 3,
+              )
             )
-          )
+          ),
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 10.0), 
@@ -94,12 +105,13 @@ class _ItemsListState extends State<ItemsList> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
       child: ListView.builder(
-        itemCount: widget.itemsList.length,
+        itemCount: itemsList.length,
         itemBuilder: (context, i) => Container(
           padding: EdgeInsets.only(bottom: 10.0),
           margin: EdgeInsets.symmetric(vertical: 5.0),
@@ -107,7 +119,7 @@ class _ItemsListState extends State<ItemsList> {
               borderRadius: BorderRadius.circular(5.0),
               // color:  widget.itemsList[i].bg
           ),
-          child: _buildListTile(i, true)
+          child: _buildListTile(i, true, context)
         )
       )
     );

@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:bagger/models/item.dart";
 import "package:bagger/pages/partials/item_form.dart";
+import "package:bagger/db/db_helper.dart";
 
 class NewItem extends StatefulWidget {
 
@@ -10,6 +11,8 @@ class NewItem extends StatefulWidget {
 
 class _NewItemState extends State<NewItem> {
   Item item;
+  final dbHelper = DBHelper.dbInstance;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -21,18 +24,22 @@ class _NewItemState extends State<NewItem> {
   
   void saveItem() {
     _formKey.currentState.save();
+    _insert(item);
     Navigator.pop(context, item);
   }
 
+  void _insert(item) async {
+    await dbHelper.insert(item.toMap());
+
+    int rowCount = await dbHelper.rowCount();
+    print("ROWS: $rowCount");
+  }
+
   void _handleTitleSave(String title) {
-    print("Title: $title");
     item.title = title;
-    setState(() {
-    });
   }
 
   void _handleContentSave(String content) {
-    print("Content: $content");
     item.content = content;
   }
 

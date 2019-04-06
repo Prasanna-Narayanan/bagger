@@ -8,8 +8,9 @@ class Item {
   bool isArchived;
   Color bg;
   List<String> labels;
+  int id;
 
-  static int id = 0;
+  static int _id = 0;
 
   var colorsList = [
     0xFF9AECDB, // green accent
@@ -22,13 +23,12 @@ class Item {
     0xFFAEDDCD, //accent Green
   ];
 
-  Item({this.title="", this.content="", this.isArchived=false}){
-    bg = Color(colorsList[id%colorsList.length]);
-
-    id++;
-    createdAt = DateTime.now();
-    updatedAt = createdAt;
-
+  Item({this.title="", this.content="", this.isArchived=false, this.createdAt=null, this.updatedAt=null}){
+    // bg = Color(colorsList[_id%colorsList.length]);
+    id = _id;
+    _id++;
+    if(this.createdAt == null) createdAt = DateTime.now();
+    if(this.updatedAt == null) updatedAt = createdAt;
   }
 
   updateItem({String title, String content, bool isArchived}) {
@@ -41,6 +41,23 @@ class Item {
   @override
     String toString() {
       // TODO: implement toString
-      return "Title: $title\nContent: $content";
+      return "title: $title, content: $content, created_at: $createdAt";
     }
+
+  Map toMap() {
+    Map<String, dynamic> map = {
+      'title': this.title,
+      'content': this.content,
+      'created_at': this.createdAt.toString(),
+      'updated_at': this.updatedAt.toString(),
+      // 'id': this.id
+    };
+
+    return map;
+  }
+
+  static fromMap(Map map) {
+    // print(DateTime.parse(map['created_at']));
+    return Item(title: map['title'], content: map['content'], createdAt: DateTime.parse(map['created_at']), updatedAt: DateTime.parse(map['updated_at']));
+  }
 }

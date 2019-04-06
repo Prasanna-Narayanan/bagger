@@ -14,7 +14,7 @@ class ItemForm extends StatelessWidget {
         children: <Widget>[
           TextFormField(
             style: TextStyle(
-              fontSize: 20.0, 
+              fontSize: 20.0,
               fontFamily: "Rancho", 
               fontWeight: FontWeight.bold,
               letterSpacing: 1.5
@@ -27,6 +27,10 @@ class ItemForm extends StatelessWidget {
           ),
           Container(
             child: TextFormField(
+              style: TextStyle(
+                fontFamily: "Rancho", 
+                fontSize: 20.0,
+              ),
               decoration: InputDecoration(
                 hintText: "Content",
                 border: InputBorder.none,
