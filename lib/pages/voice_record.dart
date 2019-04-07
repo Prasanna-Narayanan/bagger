@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 // import 'package:flutter_sound/flutter_sound.dart';
 // import "package:intl/intl.dart";
-import 'dart:io';
-import "package:path_provider/path_provider.dart";
+// import 'dart:io';
+// import "package:path_provider/path_provider.dart";
 // import "package:audio_recorder2/audio_recorder2.dart";
 
 class VoiceRecord extends StatefulWidget {
@@ -12,7 +12,8 @@ class VoiceRecord extends StatefulWidget {
 
 class _VoiceRecordState extends State<VoiceRecord> {
   // FlutterSound flutterSound;
-  bool _isPlaying = false, _isRecording = false;
+  // bool _isPlaying = false, 
+  bool _isRecording = false;
   bool hasPermission = false;
 
   @override
@@ -30,17 +31,17 @@ class _VoiceRecordState extends State<VoiceRecord> {
     });
   }
 
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
+  // Future<String> get _localPath async {
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   return directory.path;
+  // }
 
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/flutter_recordings(2).mp4');
-  }
+  // Future<File> get _localFile async {
+  //   final path = await _localPath;
+  //   return File('$path/flutter_recordings(2).mp4');
+  // }
 
-  var _playerSubscription, _recorderSubscription;
+  // var _playerSubscription, _recorderSubscription;
 
   var _backgroundDecoration = BoxDecoration(
           gradient: LinearGradient(
@@ -57,7 +58,7 @@ class _VoiceRecordState extends State<VoiceRecord> {
   );
 
   void startRecording() async {
-    File file = await _localFile;
+    // File file = await _localFile;
     
     // await AudioRecorder2.start(path: file.path.toString(), audioOutputFormat: AudioOutputFormat.AAC);
     setState(() {

@@ -4,7 +4,6 @@ import "package:sqflite/sqflite.dart";
 import "package:path/path.dart";
 import "package:path_provider/path_provider.dart";
 
-
 class DBHelper {
   static final _dbName = "Bag.db";
   static final _dbVersion = 1;
@@ -16,6 +15,7 @@ class DBHelper {
   static final columnContent = "content";
   static final columnCreatedAt = "created_at";
   static final columnUpdatedAt = "updated_at";
+  static final columnIsArchived = "is_archived";
 
   DBHelper._();
   static final DBHelper dbInstance = DBHelper._();
@@ -48,7 +48,8 @@ class DBHelper {
         $columnTitle TEXT,
         $columnContent TEXT,
         $columnCreatedAt DATETIME,
-        $columnUpdatedAt DATETME
+        $columnUpdatedAt DATETME,
+        $columnIsArchived BOOLEAN DEFAULT FALSE
       )
     '''
     );
@@ -56,20 +57,32 @@ class DBHelper {
 
   Future<int> insert(Map<String, dynamic> row) async {
     Database db = await dbInstance.database;
-    print("inserting row: $row");
-
-    return await db.insert(table, row);
+    return await db.transaction((t) => t.insert(table, row));
   }
 
   Future<int> rowCount() async {
     Database db = await dbInstance.database;
-
     return Sqflite.firstIntValue(await db.rawQuery("SELECT COUNT(*) FROM $table"));
+  }
+
+  Future<int> update(Map<String, dynamic> row, int id) async {
+    Database db = await dbInstance.database;
+    return db.transaction((Transaction t) => t.update(table, row, where: "id = $id"));
+  }
+
+  Future<int> delete(int id) async {
+    Database db = await dbInstance.database;
+    return db.transaction((t) => t.delete(table, where: "id = $id"));
   }
 
   Future<List<Map<String, dynamic>>> all() async {
     Database db = await dbInstance.database;
-    return await db.query(table);
+    return await db.transaction((t) => t.query(table, where: "NOT is_archived"));
+  }
+
+  Future<List<Map<String, dynamic>>> archivedItems() async {
+    Database db = await dbInstance.database;
+    return await db.transaction((t) => t.query(table, where: "is_archived"));
   }
 
 }

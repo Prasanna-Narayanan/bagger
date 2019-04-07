@@ -23,10 +23,10 @@ class Item {
     0xFFAEDDCD, //accent Green
   ];
 
-  Item({this.title="", this.content="", this.isArchived=false, this.createdAt=null, this.updatedAt=null}){
+  Item({this.id, this.title="", this.content="", this.isArchived=false, this.createdAt=null, this.updatedAt=null}){
     // bg = Color(colorsList[_id%colorsList.length]);
-    id = _id;
-    _id++;
+    // id = _id;
+    // _id++;
     if(this.createdAt == null) createdAt = DateTime.now();
     if(this.updatedAt == null) updatedAt = createdAt;
   }
@@ -50,6 +50,7 @@ class Item {
       'content': this.content,
       'created_at': this.createdAt.toString(),
       'updated_at': this.updatedAt.toString(),
+      'is_archived': this.isArchived
       // 'id': this.id
     };
 
@@ -58,6 +59,13 @@ class Item {
 
   static fromMap(Map map) {
     // print(DateTime.parse(map['created_at']));
-    return Item(title: map['title'], content: map['content'], createdAt: DateTime.parse(map['created_at']), updatedAt: DateTime.parse(map['updated_at']));
+    return Item(
+      id: map['id'], 
+      title: map['title'], 
+      content: map['content'], 
+      createdAt: DateTime.parse(map['created_at']), 
+      updatedAt: DateTime.parse(map['updated_at']),
+      isArchived: map['is_archived'] == 1
+    );
   }
 }

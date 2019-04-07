@@ -4,15 +4,16 @@ import "package:bagger/models/item.dart";
 class ItemsList extends StatelessWidget {
   final List<Item> itemsList;
   final Function onDismissed;
+  final Function onItemTapped;
 
-  ItemsList({this.itemsList, this.onDismissed});
+  ItemsList({this.itemsList, this.onDismissed, this.onItemTapped});
 
   String printInDouble(int t) {
     return t < 10 ? "0$t" : t.toString();
   }
 
   String _formatDate(DateTime dt) {
-    var diff = DateTime.now().difference(dt);
+    final diff = DateTime.now().difference(dt);
     
     dt = dt.toLocal();
 
@@ -47,9 +48,10 @@ class ItemsList extends StatelessWidget {
     }
   }
 
-  _handleDismiss(dir, i) {
-    print(i);
-    onDismissed(i);
+  Widget _secondaryWidget = Container(color: Colors.red);
+
+  Future<bool> _confirmDismiss(dir) async {
+    return await dir == DismissDirection.endToStart;
   }
 
   Widget _buildListTile(int i, bool isColored, BuildContext context) {
@@ -57,10 +59,12 @@ class ItemsList extends StatelessWidget {
       children: <Widget>[
         Dismissible(
             key: UniqueKey(),
-            onDismissed: (dir) { _handleDismiss(dir, i); },
+            confirmDismiss: _confirmDismiss,
+            secondaryBackground: _secondaryWidget,
+            onDismissed: (dir) { onDismissed(i); },
             background: Container(color: Theme.of(context).accentColor),
             child: ListTile(
-            onTap: () {},
+            onTap: () { onItemTapped(i); },
             // leading: _archivedList(i),
             title: Container(
               padding: EdgeInsets.only(top: 5.0),

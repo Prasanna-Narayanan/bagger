@@ -2,47 +2,70 @@ import "package:flutter/material.dart";
 import "package:bagger/models/item.dart";
 import "package:bagger/pages/partials/item_form.dart";
 import "package:bagger/db/db_helper.dart";
+import "package:intl/intl.dart";
+import "package:bagger/utils/show_snackbar.dart";
 
-class NewItem extends StatefulWidget {
+class ItemDetails extends StatefulWidget {
+  final Item item;
+  final String mode;
+
+  ItemDetails({this.item, this.mode});
 
   @override
-  _NewItemState createState() => _NewItemState();
+  _ItemDetailsState createState() => _ItemDetailsState();
 }
 
-class _NewItemState extends State<NewItem> {
-  Item item;
+class _ItemDetailsState extends State<ItemDetails> {
   final dbHelper = DBHelper.dbInstance;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _scaffoldkey = new GlobalKey<ScaffoldState>();
 
-  @override
-    void initState() {
-      super.initState();
-      item = new Item();
-    }
-
-  
-  void saveItem() {
+  void saveItem(context) {
     _formKey.currentState.save();
-    _insert(item);
-    Navigator.pop(context, item);
+    widget.mode == "CREATE" ? _insert(widget.item) : _update(widget.item);
+    Navigator.pop(context, widget.item);
   }
 
   void _insert(item) async {
     await dbHelper.insert(item.toMap());
   }
 
+  void _update(item) async {
+    item.updatedAt = DateTime.now();
+    await dbHelper.update(item.toMap(), item.id);
+  }
+
   void _handleTitleSave(String title) {
-    item.title = title;
+    widget.item.title = title;
   }
 
   void _handleContentSave(String content) {
-    item.content = content;
+    widget.item.content = content;
+  }
+
+  void _toggleItemArchive() {
+
+    setState(() {
+      widget.item.isArchived = !widget.item.isArchived;
+    });
+
+    ShowSnackbar(
+      key: _scaffoldkey,
+      message: widget.item.isArchived ? "Archived" : "Unarchived",
+      snackBarAction:  
+        SnackBarAction(
+          label: "UNDO",
+          textColor: Colors.amber,
+          onPressed: () { _toggleItemArchive(); },
+        )
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldkey,
       appBar: AppBar(
         leading: IconButton(
           onPressed: (){
@@ -52,7 +75,12 @@ class _NewItemState extends State<NewItem> {
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: (){saveItem();},
+            onPressed: (){ _toggleItemArchive(); },
+            icon: Icon(Icons.archive),
+            color: widget.item.isArchived ? Color(0xFF1b77c1) : null
+          ),
+          IconButton(
+            onPressed: (){ saveItem(context); },
             icon: Icon(Icons.check)
           )
         ],
@@ -67,6 +95,7 @@ class _NewItemState extends State<NewItem> {
               formKey: _formKey,
               handleTitleSave: _handleTitleSave,
               handleContentSave: _handleContentSave,
+              item: widget.item
             )            
           ],
         )
@@ -76,11 +105,11 @@ class _NewItemState extends State<NewItem> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             IconButton(
-              onPressed: (){},
+              onPressed: (){ },
               icon: Icon(Icons.add_box)
             ),
             Text(
-              "Edited now",
+              "Edited ${DateFormat("HH:mm a").format(DateTime.now())}",
               style: TextStyle(fontFamily: "Noto")
             ),
             IconButton(

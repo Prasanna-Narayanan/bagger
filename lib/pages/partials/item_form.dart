@@ -1,11 +1,13 @@
+import 'package:bagger/models/item.dart';
 import "package:flutter/material.dart";
 
 class ItemForm extends StatelessWidget {
   final formKey;
   final Function handleTitleSave;
   final Function handleContentSave;
+  final Item item;
 
-  ItemForm({this.formKey, this.handleTitleSave, this.handleContentSave});
+  ItemForm({this.formKey, this.handleTitleSave, this.handleContentSave, this.item});
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -23,6 +25,7 @@ class ItemForm extends StatelessWidget {
               hintText: "Title",
               border: InputBorder.none,
             ),
+            initialValue: item.title,
             onSaved: (String text) => { handleTitleSave(text) },
           ),
           Container(
@@ -38,6 +41,7 @@ class ItemForm extends StatelessWidget {
               onSaved: (String text) { handleContentSave(text); },
               keyboardType: TextInputType.multiline,
               maxLines: null,
+              initialValue: item.content,
             ),
           ),
         ],

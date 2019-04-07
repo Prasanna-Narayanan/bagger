@@ -13,6 +13,7 @@ class BagsApp extends StatelessWidget {
         accentColor: Color(0xffaeddcd),
         primaryIconTheme: IconThemeData(color: Color(0xff3c6382)),
         iconTheme: IconThemeData(color: Color(0xff3c6382)),
+        buttonColor: Color(0xff3c6382),
         primaryTextTheme: TextTheme(
           title: TextStyle(
             color: Color(0xff3c6382),
